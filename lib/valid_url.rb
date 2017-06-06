@@ -11,9 +11,9 @@ module ActiveModel
       ZONES = domain["zones"]
 
       def validate_each(record, attribute, value)
+        invalid = false
         begin
-          url = ensure_protocol(value)
-          uri = Addressable::URI.parse(url)
+          uri = Addressable::URI.parse(value)
         rescue
           invalid = true
         end
@@ -25,17 +25,9 @@ module ActiveModel
 
       protected
 
-      # add common protocol by default
-      def ensure_protocol url
-        if url[/\A(http|https):\/\//i]
-          url
-        else
-          "http://" + url
-        end
-      end
-
       # http and https are accepted
       def valid_scheme? scheme
+        return false if scheme == nil
         UrlValidator::PROTOCOLS.include?(scheme.mb_chars.downcase.to_s)
       end
 
